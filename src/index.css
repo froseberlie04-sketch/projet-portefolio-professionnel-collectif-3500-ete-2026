@@ -1,0 +1,69 @@
+/* Tèm Klè (Pa défaut) */
+:root {
+  --bg-primary: #ffffff;
+  --text-primary: #1e293b;
+  --bg-card: #f8fafc;
+  --color-accent: #2563eb;
+  --border-color: #e2e8f0;
+}
+
+/* Tèm Sombr (Lè klas 'dark' la aktivite) */
+[data-theme='dark'] {
+  --bg-primary: #0f172a;
+  --text-primary: #f8fafc;
+  --bg-card: #1e293b;
+  --color-accent: #60a5fa;
+  --border-color: #334155;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Header ak Meni (Flexbox) */
+.site-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+}
+
+.site-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-nav ul {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Galerie Projets (CSS Grid) */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.project-card, .member-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .site-nav {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
