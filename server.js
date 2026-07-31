@@ -1,67 +1,59 @@
-import express from 'express';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// Railway ap bay pò a nan process.env.PORT, si l pa la n ap sèvi ak 8080
+const PORT = process.env.PORT || 8080;
 
-// Middleware pou li done JSON ki soti nan frontend
+// Middleware pou li done JSON ki soti nan fòm kontak la
 app.use(express.json());
 
-// Servir les fichiers statiques du build Vite (dossier dist)
+// Sèvi fichiye statik ki soti nan dossier build Vite la (dist)
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Route API POST pour le formulaire de contact
+// Route POST pou resevwa done fòm kontak la epi anrejistre yo nan messages.json
 app.post('/api/contact', (req, res) => {
-  const { name, email, message } = req.body;
+  const { nom, email, message } = req.body;
 
-  // Validation des champs côté serveur
-  if (!name || !email || !message || !email.includes('@')) {
-    return res.status(400).json({ error: 'Champs invalides ou manquants.' });
+  // Validation senp pou asire tout chan yo ranpli
+  if (!nom || !email || !message) {
+    return res.status(400).json({ error: 'Tous les champs sont requis.' });
   }
 
   const newMessage = {
-    id: Date.now(),
-    name,
+    nom,
     email,
     message,
     date: new Date().toISOString()
   };
 
+  const filePath = path.join(__dirname, 'messages.json');
   let messages = [];
 
-  // Lecture du fichier messages.json existant
-  try {
-    if (fs.existsSync('messages.json')) {
-      const data = fs.readFileSync('messages.json', 'utf8');
-      messages = JSON.parse(data);
+  // Li mesaj ki te deja anrejistre yo si fichiye a egziste
+  if (fs.existsSync(filePath)) {
+    try {
+      const content = fs.readFileSync(filePath, 'utf8');
+      messages = JSON.parse(content || '[]');
+    } catch (e) {
+      messages = [];
     }
-  } catch (err) {
-    console.error("Erreur lors de la lecture de messages.json:", err);
   }
 
-  // Ajout du nouveau message et sauvegarde
+  // Ajoute nouvo mesaj la epi anrejistre nan messages.json
   messages.push(newMessage);
+  fs.writeFileSync(filePath, JSON.stringify(messages, null, 2));
 
-  try {
-    fs.writeFileSync('messages.json', JSON.stringify(messages, null, 2));
-    res.status(200).json({ success: true, message: 'Message enregistré avec succès !' });
-  } catch (err) {
-    console.error("Erreur lors de l'écriture dans messages.json:", err);
-    res.status(500).json({ error: 'Erreur serveur lors de la sauvegarde.' });
-  }
+  res.status(200).json({ success: true, message: 'Message enregistré avec succès !' });
 });
 
-// Redirection pour React Router
+// Redirecte tout lòt requêtes sou index.html pou React Router ka jere navigasyon an
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-// Démarrage du serveur
+// Demare sèvè a
 app.listen(PORT, () => {
-  console.log(`Serveur Express démarré sur le port ${PORT}`);
+  console.log(`Serveur démarré sur le port ${PORT}`);
 });
